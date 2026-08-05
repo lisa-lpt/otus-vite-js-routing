@@ -1,5 +1,9 @@
 export function renderProfilePage(parentEl: HTMLElement) {
   parentEl.innerHTML = `
-    <h1>Работает2</h1>
+    <div>
+      <h2>name<h2>
+      <p>details1</p>
+    </div>
+    <button>Switch to another account</button>
   `;
 }
