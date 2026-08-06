@@ -1,5 +1,9 @@
+import {
+  setLocalStorageStoreHuman,
+  setLocalStorageStorePet,
+} from '../localStorage/localStorage';
 import { navigateTo } from '../router/router';
-import { store } from '../Store/configureStore';
+import { store, type Person } from '../store';
 
 export function renderLoginPage(parentEl: HTMLElement) {
   parentEl.innerHTML = `
@@ -43,20 +47,45 @@ export function renderLoginPage(parentEl: HTMLElement) {
     const inputAcc = document.querySelector<HTMLInputElement>(
       '.input-person-check:checked'
     );
-    const checkedAcc = inputAcc?.value;
-    if (checkedAcc == 'human') {
-      store.dispatch({
-        type: 'human',
-        payloadName: inputName!.value.trim(),
-        payloadSurname: inputSurname!.value.trim(),
-      });
-    } else {
-      store.dispatch({
-        type: 'pet',
-        payloadPetType: inputPetType!.value.trim(),
-        payloadPetName: inputPetName!.value.trim(),
-      });
-    }
+    const checkedAcc = inputAcc?.value as Person;
+    store.dispatch({ type: 'setPerson', payload: checkedAcc });
+    store.dispatch({
+      type: 'addInfoToHuman',
+      payload: {
+        name: inputName!.value.trim(),
+        surname: inputSurname!.value.trim(),
+      },
+    });
+    store.dispatch({
+      type: 'addInfoToPet',
+      payload: {
+        petType: inputPetType!.value.trim(),
+        petName: inputPetName!.value.trim(),
+      },
+    });
+    setLocalStorageStoreHuman();
+    setLocalStorageStorePet();
+    // if (checkedAcc == 'human') {
+    //   store.dispatch({
+    //     type: 'changeToHuman',
+    //     payloadName: inputName!.value.trim(),
+    //     payloadSurname: inputSurname!.value.trim(),
+    //     payloadHumanAge: store.getState().humanInfo.age,
+    //     payloadHobby: store.getState().humanInfo.hobby,
+    //     payloadEmail: store.getState().humanInfo.email,
+    //   });
+    //   setLocalStorageStoreHuman();
+    // } else {
+    //   store.dispatch({
+    //     type: 'changeToPet',
+    //     payloadPetType: inputPetType!.value.trim(),
+    //     payloadPetName: inputPetName!.value.trim(),
+    //     payloadPetAge: store.getState().petInfo.petAge,
+    //     payloadPetColor: store.getState().petInfo.petColor,
+    //     payloadPetSize: store.getState().petInfo.petSize,
+    //   });
+    //   setLocalStorageStorePet();
+    // }
     navigateTo('profileForm', parentEl);
   });
 }

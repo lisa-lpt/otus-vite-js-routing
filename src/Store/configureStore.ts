@@ -1,64 +1,14 @@
-type Action =
-  | { type: 'human'; payloadName: string; payloadSurname: string }
-  | { type: 'pet'; payloadPetType: string; payloadPetName: string };
-
-type State = {
-  person: string;
-  name: string;
-  surname: string;
-  petType: string;
-  petName: string;
-};
-
-export type Store<State = any, Action = { type: string }> = {
-  getState(): State;
-  dispatch(action: Action): any;
+export type Store<S = object, A = { type: string }> = {
+  getState(): S;
+  dispatch(action: A): any;
   subscribe(cb: () => void): () => void;
 };
 
-export type Reducer<State, Action> = (
-  state: State | undefined,
-  action: Action
-) => State;
+export type Reducer<S, A> = (state: S, action: A) => S;
 
-export type ConfigureStore<State, Action> = (
-  reducer: Reducer<State, Action>,
-  initialState?: State | undefined
-) => Store<State, Action>;
-
-export const reducer: Reducer<State, Action> = (
-  state = {
-    person: 'human',
-    name: 'John',
-    surname: 'Doe',
-    petType: 'cat',
-    petName: 'Mr. Orange',
-  },
-  action
-) => {
-  switch (action.type) {
-    case 'human':
-      return {
-        ...state,
-        person: (state.person = 'human'),
-        name: (state.name = action.payloadName),
-        surname: (state.surname = action.payloadSurname),
-      };
-    case 'pet':
-      return {
-        ...state,
-        person: (state.person = 'pet'),
-        petType: (state.petType = action.payloadPetType),
-        petName: (state.petName = action.payloadPetName),
-      };
-    default:
-      return state;
-  }
-};
-
-export const configureStore: ConfigureStore<State, Action> = (
-  reducer: Reducer<State, Action>,
-  initialState?: any
+export const configureStore = <S, A>(
+  reducer: Reducer<S, A>,
+  initialState: S
 ) => {
   let state = initialState;
   const cbs: Set<() => void> = new Set();
@@ -66,7 +16,7 @@ export const configureStore: ConfigureStore<State, Action> = (
     getState() {
       return state;
     },
-    dispatch(action: Action) {
+    dispatch(action: A) {
       state = reducer(state, action);
       cbs.forEach((cb) => cb());
     },
@@ -76,11 +26,3 @@ export const configureStore: ConfigureStore<State, Action> = (
     },
   };
 };
-
-export const store = configureStore(reducer, {
-  person: 'human',
-  name: 'John',
-  surname: 'Doe',
-  petType: 'cat',
-  petName: 'Mr. Orange',
-});
