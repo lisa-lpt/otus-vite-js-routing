@@ -1,21 +1,15 @@
-import {
-  getLocalStorage,
-  setLocalStorageStoreHuman,
-  setLocalStorageStorePet,
-} from '../localStorage/localStorage';
 import { navigateTo } from '../router/router';
 import { store } from '../store';
 
 export function renderProfileFormPage(parentEl: HTMLElement) {
   parentEl.innerHTML = ``;
-  if (store.getState().person == 'human') {
-    const details = getLocalStorage('human');
-
+  const { person, humanInfo, petInfo } = store.getState();
+  if (person == 'human') {
     const greetingEl = document.createElement('p');
     greetingEl.classList.add('greeting');
-    greetingEl.textContent = `Greetings, ${details[0]} ${details[1]}! `;
-    // greetingEl.textContent = `Greetings, ${store.getState().humanInfo.name} ${store.getState().humanInfo.surname}! `;
+    greetingEl.textContent = `Greetings, ${humanInfo.name} ${humanInfo.surname}!`;
     parentEl.appendChild(greetingEl);
+
     const formEl = document.createElement('div');
     formEl.classList.add('form-container');
     parentEl.appendChild(formEl);
@@ -40,10 +34,9 @@ export function renderProfileFormPage(parentEl: HTMLElement) {
   } else {
     const greetingEl = document.createElement('p');
     greetingEl.classList.add('greeting');
-    const detailsP = getLocalStorage('pet');
-    greetingEl.textContent = `Greetings, ${detailsP[0]} ${detailsP[1]}`;
-    // greetingEl.textContent = `Greetings, ${store.getState().petInfo.petType} ${store.getState().petInfo.petName}`;
+    greetingEl.textContent = `Greetings, ${petInfo.petType} ${petInfo.petName}`;
     parentEl.appendChild(greetingEl);
+
     const formEl = document.createElement('div');
     formEl.classList.add('form-container');
     parentEl.appendChild(formEl);
@@ -91,7 +84,6 @@ export function renderProfileFormPage(parentEl: HTMLElement) {
           email: inputHumanEmail!.value.trim(),
         },
       });
-      setLocalStorageStoreHuman();
     } else {
       store.dispatch({
         type: 'addInfoToPet',
@@ -101,7 +93,6 @@ export function renderProfileFormPage(parentEl: HTMLElement) {
           petSize: inputPetSize!.value.trim(),
         },
       });
-      setLocalStorageStorePet();
     }
     navigateTo('profile', parentEl);
   });

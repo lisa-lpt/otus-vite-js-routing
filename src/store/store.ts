@@ -1,6 +1,14 @@
+import {
+  getLocalStorageHumanInfo,
+  getLocalStoragePerson,
+  getLocalStoragePetInfo,
+  setLocalStorageHumanInfo,
+  setLocalStoragePerson,
+  setLocalStoragePetInfo,
+} from '../localStorage';
 import { configureStore, type Reducer } from './configureStore';
 
-interface PetInfo {
+export interface PetInfo {
   petType: string;
   petName: string;
   petSize: string;
@@ -8,7 +16,7 @@ interface PetInfo {
   petAge: string;
 }
 
-interface HumanInfo {
+export interface HumanInfo {
   name: string;
   surname: string;
   age: string;
@@ -27,7 +35,8 @@ type AppAction =
       type: 'addInfoToPet';
       payload: Partial<PetInfo>;
     }
-  | { type: 'setPerson'; payload: Person };
+  | { type: 'setPerson'; payload: Person }
+  | { type: 'clearState' };
 
 type AppState = {
   person: Person;
@@ -55,30 +64,49 @@ const defaultState: AppState = {
 
 export const reducer: Reducer<AppState, AppAction> = (state, action) => {
   switch (action.type) {
-    case 'addInfoToHuman':
-      return {
+    case 'addInfoToHuman': {
+      const newState = {
         ...state,
         humanInfo: {
           ...state.humanInfo,
           ...action.payload,
         },
       };
-    case 'addInfoToPet':
-      return {
+      setLocalStorageHumanInfo(newState.humanInfo);
+      return newState;
+    }
+    case 'addInfoToPet': {
+      const newState = {
         ...state,
         petInfo: {
           ...state.petInfo,
           ...action.payload,
         },
       };
-    case 'setPerson':
-      return {
+      setLocalStoragePetInfo(newState.petInfo);
+      return newState;
+    }
+    case 'setPerson': {
+      const newState = {
         ...state,
         person: action.payload,
       };
+      setLocalStoragePerson(newState.person);
+      return newState;
+    }
+    case 'clearState': {
+      setLocalStoragePerson(null);
+      setLocalStorageHumanInfo(null);
+      setLocalStoragePetInfo(null);
+      return defaultState;
+    }
     default:
       return state;
   }
 };
+
+defaultState.person = getLocalStoragePerson() || defaultState.person;
+defaultState.humanInfo = getLocalStorageHumanInfo() || defaultState.humanInfo;
+defaultState.petInfo = getLocalStoragePetInfo() || defaultState.petInfo;
 
 export const store = configureStore(reducer, defaultState);

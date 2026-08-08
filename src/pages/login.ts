@@ -1,7 +1,3 @@
-import {
-  setLocalStorageStoreHuman,
-  setLocalStorageStorePet,
-} from '../localStorage/localStorage';
 import { navigateTo } from '../router/router';
 import { store, type Person } from '../store';
 
@@ -48,7 +44,9 @@ export function renderLoginPage(parentEl: HTMLElement) {
       '.input-person-check:checked'
     );
     const checkedAcc = inputAcc?.value as Person;
+
     store.dispatch({ type: 'setPerson', payload: checkedAcc });
+
     store.dispatch({
       type: 'addInfoToHuman',
       payload: {
@@ -56,6 +54,7 @@ export function renderLoginPage(parentEl: HTMLElement) {
         surname: inputSurname!.value.trim(),
       },
     });
+
     store.dispatch({
       type: 'addInfoToPet',
       payload: {
@@ -63,29 +62,7 @@ export function renderLoginPage(parentEl: HTMLElement) {
         petName: inputPetName!.value.trim(),
       },
     });
-    setLocalStorageStoreHuman();
-    setLocalStorageStorePet();
-    // if (checkedAcc == 'human') {
-    //   store.dispatch({
-    //     type: 'changeToHuman',
-    //     payloadName: inputName!.value.trim(),
-    //     payloadSurname: inputSurname!.value.trim(),
-    //     payloadHumanAge: store.getState().humanInfo.age,
-    //     payloadHobby: store.getState().humanInfo.hobby,
-    //     payloadEmail: store.getState().humanInfo.email,
-    //   });
-    //   setLocalStorageStoreHuman();
-    // } else {
-    //   store.dispatch({
-    //     type: 'changeToPet',
-    //     payloadPetType: inputPetType!.value.trim(),
-    //     payloadPetName: inputPetName!.value.trim(),
-    //     payloadPetAge: store.getState().petInfo.petAge,
-    //     payloadPetColor: store.getState().petInfo.petColor,
-    //     payloadPetSize: store.getState().petInfo.petSize,
-    //   });
-    //   setLocalStorageStorePet();
-    // }
+
     navigateTo('profileForm', parentEl);
   });
 }
